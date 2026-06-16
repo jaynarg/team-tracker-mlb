@@ -81,6 +81,17 @@ const fmtGameDate = (isoStr) => {
   const d = new Date(isoStr);
   return `${DAYS[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
 };
+const fmtGameTime = (game) => {
+  if (game?.status?.startTimeTBD) return 'TBD';
+  if (!game?.gameDate) return '';
+  const s = new Date(game.gameDate).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+  // "3:45 PM" → "3:45pm"
+  return s.replace(' ', '').toLowerCase();
+};
 
 const parseIP = (ipStr) => {
   if (ipStr === undefined || ipStr === null) return 0;
@@ -634,7 +645,7 @@ function GameRow({ game, kind, teamId }) {
   return (
     <li className="game game-scheduled">
       <div className="game-line">
-        <span className="game-date">{date}:</span>
+        <span className="game-date">{date}: {fmtGameTime(game)}</span>
         <span className="game-opp">{venue} {oppAbbr}</span>
       </div>
       {probablePitcherLine(game, teamId) && (
