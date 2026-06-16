@@ -293,12 +293,29 @@ async function loadAll(team) {
     notable: extractNotable(boxscores[i], TEAM_ID),
   }));
 
+  const liveGames = upcoming.filter((g) => g.status?.abstractGameState === 'Live');
+const liveBoxscores = await Promise.all(
+  liveGames.map((g) =>
+    fetch(`${API}/game/${g.gamePk}/boxscore`)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+  )
+);
+const liveBoxscoreByGamePk = Object.fromEntries(
+  liveGames.map((g, i) => [g.gamePk, liveBoxscores[i]])
+);
+const upcomingWithPitchers = upcoming.map((g) =>
+  g.status?.abstractGameState === 'Live'
+    ? { ...g, currentPitchers: extractCurrentPitchers(liveBoxscoreByGamePk[g.gamePk]) }
+    : g
+);
+  
   return {
     loading: false,
     error: null,
     record: { wins, losses, l10W, l10L, divisionRank, divisionName },
     recent: recentWithNotable,
-    upcoming,
+    upcoming: upcomingWithPitchers,
     seasonHitters: topHitters(seasonHit, 5),
     seasonPitchers: topPitchers(seasonPit, 4),
     seasonSaves: topSavesLeader(seasonPit),
