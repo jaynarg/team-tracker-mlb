@@ -41,6 +41,16 @@ const TEAMS = [
 ];
 const TEAMS_SORTED = [...TEAMS].sort((a, b) => a.name.localeCompare(b.name));
 
+// MLB division IDs → short display names
+const DIVISION_NAMES = {
+  200: 'AL West',
+  201: 'AL East',
+  202: 'AL Central',
+  203: 'NL West',
+  204: 'NL East',
+  205: 'NL Central',
+};
+
 // ===== Cache (localStorage, 5-min TTL) =====
 // localStorage is blocked in Claude's artifact sandbox; try/catch makes it a silent no-op there.
 // Works as designed once deployed.
@@ -95,7 +105,7 @@ const MOCK_DATA = {
   loading: false,
   error: null,
   isMock: true,
-  record: { wins: 37, losses: 35, l10W: 6, l10L: 4 },
+  record: { wins: 37, losses: 35, l10W: 6, l10L: 4, divisionRank: '3', divisionName: 'NL East' },
   recent: [
     {
       gamePk: 1, gameDate: '2026-06-12T23:05:00Z',
@@ -212,15 +222,22 @@ async function loadAll(team) {
   ]);
 
   let teamRecord = null;
+  let divisionId = null;
   for (const div of standings.records || []) {
     const found = (div.teamRecords || []).find((t) => t.team?.id === TEAM_ID);
-    if (found) { teamRecord = found; break; }
+    if (found) {
+      teamRecord = found;
+      divisionId = div.division?.id;
+      break;
+    }
   }
   const wins = teamRecord?.wins ?? 0;
   const losses = teamRecord?.losses ?? 0;
   const l10 = (teamRecord?.records?.splitRecords || []).find((r) => r.type === 'lastTen');
   const l10W = l10?.wins ?? 0;
   const l10L = l10?.losses ?? 0;
+  const divisionRank = teamRecord?.divisionRank ?? null;
+  const divisionName = DIVISION_NAMES[divisionId] || null;
 
   const allGames = (schedule.dates || []).flatMap((d) => d.games || []);
   allGames.sort((a, b) => new Date(a.gameDate) - new Date(b.gameDate));
@@ -247,7 +264,7 @@ async function loadAll(team) {
   return {
     loading: false,
     error: null,
-    record: { wins, losses, l10W, l10L },
+    record: { wins, losses, l10W, l10L, divisionRank, divisionName },
     recent: recentWithNotable,
     upcoming,
     seasonHitters: topHitters(seasonHit, 4),
@@ -462,12 +479,15 @@ function Dashboard({ team, isMock, record, recent, upcoming, seasonHitters, seas
 }
 
 function TeamHeader({ team, record }) {
+  const hasRank = record.divisionRank && record.divisionName;
   return (
     <div className="team-header">
       <div className="team-name">{team.name}</div>
       <div className="team-record">
         <span className="rec-main">{record.wins}-{record.losses}</span>
-        <span className="rec-l10">({record.l10W}-{record.l10L} L10)</span>
+        <span className="rec-l10">
+          ({hasRank ? `#${record.divisionRank} ${record.divisionName}, ` : ''}{record.l10W}-{record.l10L} L10)
+        </span>
       </div>
     </div>
   );
