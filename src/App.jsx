@@ -645,7 +645,7 @@ function GameRow({ game, kind, teamId }) {
   return (
     <li className="game game-scheduled">
       <div className="game-line">
-        <span className="game-date">{date}: {fmtGameTime(game)}</span>
+        <span className="game-date">{date} at {fmtGameTime(game)}: </span>
         <span className="game-opp">{venue} {oppAbbr}</span>
       </div>
       {probablePitcherLine(game, teamId) && (
