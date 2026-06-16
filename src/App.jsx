@@ -210,7 +210,7 @@ async function loadAll(team) {
 
   const urls = {
     standings: `${API}/standings?leagueId=${LEAGUE_ID}&season=${SEASON}&standingsTypes=regularSeason&hydrate=team`,
-    schedule:  `${API}/schedule?sportId=1&teamId=${TEAM_ID}&startDate=${fmtISO(scheduleStart)}&endDate=${fmtISO(scheduleEnd)}&hydrate=linescore,team`,
+    schedule:  `${API}/schedule?sportId=1&teamId=${TEAM_ID}&startDate=${fmtISO(scheduleStart)}&endDate=${fmtISO(scheduleEnd)}&hydrate=linescore,team,probablePitcher`,
     seasonHit: `${API}/stats?stats=season&group=hitting&season=${SEASON}&teamId=${TEAM_ID}&playerPool=ALL&sportId=1&limit=100&gameType=R`,
     seasonPit: `${API}/stats?stats=season&group=pitching&season=${SEASON}&teamId=${TEAM_ID}&playerPool=ALL&sportId=1&limit=100&gameType=R`,
     last30Hit: `${API}/stats?stats=byDateRange&group=hitting&season=${SEASON}&startDate=${fmtISO(thirty)}&endDate=${fmtISO(today)}&teamId=${TEAM_ID}&playerPool=ALL&sportId=1&limit=100&gameType=R`,
