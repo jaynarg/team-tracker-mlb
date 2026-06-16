@@ -607,7 +607,7 @@ function HittersTable({ players }) {
             <tbody>
               {players.map((p) => (
                 <tr key={p.name}>
-                  <td className="name">{lastNameOf(p.name)}</td>
+                  <td className="name">{initialedName(p.name)}</td>
                   <td>{p.h}/{p.ab}</td>
                   <td>{p.r}</td>
                   <td>{p.hr}</td>
@@ -652,7 +652,7 @@ function PitchersTable({ players, savesLeader }) {
             <tbody>
               {rows.map((p) => (
                 <tr key={p.name}>
-                  <td className="name">{lastNameOf(p.name)}</td>
+                  <td className="name">{initialedName(p.name)}</td>
                   <td>{p.ipStr}</td>
                   <td>{p.gs}</td>
                   <td>{p.w}</td>
