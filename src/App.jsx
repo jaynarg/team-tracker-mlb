@@ -624,6 +624,9 @@ function GameRow({ game, kind, teamId }) {
           <span className="game-opp">{venue} {oppAbbr}</span>
           <span className="live-dot" aria-label="live" />
         </div>
+        {currentPitcherLine(game, teamId) && (
+          <div className="notable">{currentPitcherLine(game, teamId)}</div>
+        )}
       </li>
     );
   }
@@ -634,6 +637,9 @@ function GameRow({ game, kind, teamId }) {
         <span className="game-date">{date}:</span>
         <span className="game-opp">{venue} {oppAbbr}</span>
       </div>
+      {probablePitcherLine(game, teamId) && (
+        <div className="notable">{probablePitcherLine(game, teamId)}</div>
+      )}
     </li>
   );
 }
