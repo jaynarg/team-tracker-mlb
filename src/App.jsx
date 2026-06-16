@@ -37,7 +37,7 @@ const TEAMS = [
   { id: 139, name: 'Rays',         abbr: 'TB',  leagueId: 103, color: '#092C5C' },
   { id: 140, name: 'Rangers',      abbr: 'TEX', leagueId: 103, color: '#003278' },
   { id: 141, name: 'Blue Jays',    abbr: 'TOR', leagueId: 103, color: '#134A8E' },
-  { id: 120, name: 'Nationals',    abbr: 'WSH', leagueId: 104, color: '#14225A' },
+  { id: 120, name: 'Nationals',    abbr: 'WSH', leagueId: 104, color: '#AB0003' },
 ];
 const TEAMS_SORTED = [...TEAMS].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -92,6 +92,16 @@ const lastNameOf = (fullName) => {
   if (!fullName) return '';
   const parts = fullName.split(' ');
   return parts.length > 1 ? parts.slice(1).join(' ') : fullName;
+};
+
+const initialedName = (fullName) => {
+  if (!fullName) return '';
+  const parts = fullName.split(' ');
+  if (parts.length < 2) return fullName;
+  const first = parts[0];
+  const prefix = first.slice(0, 3);
+  const dot = prefix.length < first.length ? '.' : ''; // only add period if we truncated
+  return `${prefix}${dot} ${parts.slice(1).join(' ')}`;
 };
 
 const fmtAvg = (val) => {
@@ -267,11 +277,11 @@ async function loadAll(team) {
     record: { wins, losses, l10W, l10L, divisionRank, divisionName },
     recent: recentWithNotable,
     upcoming,
-    seasonHitters: topHitters(seasonHit, 4),
-    seasonPitchers: topPitchers(seasonPit, 3),
+    seasonHitters: topHitters(seasonHit, 5),
+    seasonPitchers: topPitchers(seasonPit, 4),
     seasonSaves: topSavesLeader(seasonPit),
-    last30Hitters: topHitters(last30Hit, 4),
-    last30Pitchers: topPitchers(last30Pit, 3),
+    last30Hitters: topHitters(last30Hit, 5),
+    last30Pitchers: topPitchers(last30Pit, 4),
     last30Saves: topSavesLeader(last30Pit),
   };
 }
