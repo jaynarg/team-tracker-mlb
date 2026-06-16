@@ -94,6 +94,28 @@ const lastNameOf = (fullName) => {
   return parts.length > 1 ? parts.slice(1).join(' ') : fullName;
 };
 
+function probablePitcherLine(game, teamId) {
+  const isHome = game.teams?.home?.team?.id === teamId;
+  const us = isHome ? game.teams?.home : game.teams?.away;
+  const them = isHome ? game.teams?.away : game.teams?.home;
+  const ours = us?.probablePitcher?.fullName;
+  const theirs = them?.probablePitcher?.fullName;
+  if (!ours && !theirs) return null;
+  const fmt = (n, a) => `${n ? lastNameOf(n) : 'TBD'} (${a || ''})`;
+  return `Probable Pitchers: ${fmt(ours, us?.team?.abbreviation)}, ${fmt(theirs, them?.team?.abbreviation)}`;
+}
+
+function currentPitcherLine(game, teamId) {
+  const cp = game.currentPitchers;
+  if (!cp) return null;
+  const isHome = game.teams?.home?.team?.id === teamId;
+  const ours = isHome ? cp.home : cp.away;
+  const theirs = isHome ? cp.away : cp.home;
+  if (!ours?.name && !theirs?.name) return null;
+  const fmt = (n, a) => `${n ? lastNameOf(n) : 'TBD'} (${a || ''})`;
+  return `Current Pitchers: ${fmt(ours?.name, ours?.abbr)}, ${fmt(theirs?.name, theirs?.abbr)}`;
+}
+
 const initialedName = (fullName) => {
   if (!fullName) return '';
   const parts = fullName.split(' ');
@@ -337,6 +359,22 @@ function extractNotable(boxscore, teamId) {
     parts.push(`${lastNameOf(topPitcher.name)} ${topPitcher.ipStr} IP, ${topPitcher.r} R`);
   }
   return parts.length ? parts.join('. ') + '.' : null;
+}
+
+function extractCurrentPitchers(boxscore) {
+  if (!boxscore?.teams) return null;
+  const latest = (side) => {
+    const t = boxscore.teams[side];
+    const list = t?.pitchers || [];
+    if (!list.length) return null;
+    const id = list[list.length - 1];
+    const player = t.players?.[`ID${id}`];
+    return {
+      name: player?.person?.fullName,
+      abbr: t.team?.abbreviation,
+    };
+  };
+  return { home: latest('home'), away: latest('away') };
 }
 
 function splitsOf(stats) {
