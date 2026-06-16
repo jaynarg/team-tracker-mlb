@@ -97,9 +97,9 @@ const lastNameOf = (fullName) => {
 const initialedName = (fullName) => {
   if (!fullName) return '';
   const parts = fullName.split(' ');
-  if (parts.length < 2) return fullName;
+  if (parts.length < 5) return fullName;
   const first = parts[0];
-  const prefix = first.slice(0, 3);
+  const prefix = first.slice(0, 6);
   const dot = prefix.length < first.length ? '.' : ''; // only add period if we truncated
   return `${prefix}${dot} ${parts.slice(1).join(' ')}`;
 };
